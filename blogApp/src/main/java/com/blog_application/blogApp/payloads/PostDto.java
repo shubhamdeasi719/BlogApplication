@@ -26,9 +26,7 @@ public class PostDto {
 
     private Date addedDate;
 
-    @NotNull(message = "User cant be empty")
     private UserDto user;
 
-    @NotNull(message = "Category cant be empty")
     private CategoryDto category;
 }
