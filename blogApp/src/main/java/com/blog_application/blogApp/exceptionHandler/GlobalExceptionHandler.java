@@ -8,6 +8,7 @@ import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,5 +49,17 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<ApiResponse>(apiResponse,HttpStatus.BAD_REQUEST);
     }
 
+    @ExceptionHandler(PostNotFoundException.class)
+    public ResponseEntity<ApiResponse> postNotFoundExceptionHandler(PostNotFoundException ex)
+    {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(),false);
+        return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
+    }
 
+    @ExceptionHandler(NoResourceFoundException.class)
+    public ResponseEntity<ApiResponse> NoResourceFoundExceptionHandler(NoResourceFoundException ex)
+    {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(),false);
+        return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
+    }
 }
