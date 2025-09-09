@@ -1,6 +1,7 @@
 package com.blog_application.blogApp.exceptionHandler;
 
 import com.blog_application.blogApp.payloads.ApiResponse;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -57,9 +58,22 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
-    public ResponseEntity<ApiResponse> NoResourceFoundExceptionHandler(NoResourceFoundException ex)
+    public ResponseEntity<ApiResponse> noResourceFoundExceptionHandler(NoResourceFoundException ex)
     {
         ApiResponse apiResponse = new ApiResponse(ex.getMessage(),false);
         return new ResponseEntity<>(apiResponse,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(CommentNotFoundException.class)
+    public ResponseEntity<ApiResponse> commentNotFoundException(CommentNotFoundException ex)
+    {
+        ApiResponse apiResponse = new ApiResponse(ex.getMessage(),false);
+        return new ResponseEntity<>(apiResponse,HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<ApiResponse> dataIntegrityViolationException(DataIntegrityViolationException ex)
+    {
+        return new ResponseEntity<>(new ApiResponse(ex.getMessage(),false),HttpStatus.BAD_REQUEST);
     }
 }
