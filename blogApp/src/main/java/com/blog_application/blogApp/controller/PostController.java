@@ -64,17 +64,29 @@ public class PostController {
     }
 
     @GetMapping("/category/{categoryId}/posts")
-    public ResponseEntity<List<PostDto>> getAllPostsByCategory(@PathVariable Integer categoryId)
+    public ResponseEntity <PostResponse> getAllPostsByCategory(
+            @PathVariable Integer categoryId,
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false)  Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value= "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+            )
     {
-        List<PostDto> postDtos = postService.getPostsByCategory(categoryId);
-        return new ResponseEntity<>(postDtos,HttpStatus.FOUND);
+        PostResponse postResponse= postService.getPostsByCategory(categoryId,pageNumber,pageSize, sortBy, sortDir);
+        return new ResponseEntity<>(postResponse,HttpStatus.FOUND);
     }
 
     @GetMapping("/user/{userId}/posts")
-    public ResponseEntity<List<PostDto>> getAllPostsByUser(@PathVariable Integer userId)
+    public ResponseEntity<PostResponse> getAllPostsByUser(
+            @PathVariable Integer userId,
+            @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false)  Integer pageNumber,
+            @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
+            @RequestParam(value= "sortBy", defaultValue = AppConstants.SORT_BY, required = false) String sortBy,
+            @RequestParam(value = "sortDir", defaultValue = AppConstants.SORT_DIR, required = false) String sortDir
+            )
     {
-        List<PostDto> postDtos = postService.getPostsByUser(userId);
-        return new ResponseEntity<>(postDtos,HttpStatus.FOUND);
+        PostResponse postResponse = postService.getPostsByUser(userId,pageNumber,pageSize, sortBy, sortDir);
+        return new ResponseEntity<>(postResponse,HttpStatus.FOUND);
     }
 
 

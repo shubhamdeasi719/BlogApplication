@@ -129,7 +129,7 @@ public class PostServiceImpl implements PostService{
     }
 
     @Override
-    public List<PostDto> getPostsByCategory(Integer categoryId) {
+    public PostResponse getPostsByCategory(Integer categoryId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         Optional<Category> optionalCategory = categoryRepository.findById(categoryId);
         if(optionalCategory.isEmpty())
         {
@@ -137,14 +137,26 @@ public class PostServiceImpl implements PostService{
         }
 
         Category existingCategory = optionalCategory.get();
-        List<Post> postsByCategory = postRepository.findByCategory(existingCategory);
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        List<PostDto> postDtos = postsByCategory.stream().map(post -> entityToDto(post)).toList();
-        return postDtos;
+        Pageable page = PageRequest.of(pageNumber,pageSize,sort);
+        Page<Post> pagePosts = postRepository.findByCategory(existingCategory, page);
+        List<Post> posts = pagePosts.getContent();
+        List<PostDto> postDtos = posts.stream().map(post -> entityToDto(post)).toList();
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePosts.getNumber());
+        postResponse.setPageSize(pagePosts.getSize());
+        postResponse.setTotalElements(pagePosts.getTotalElements());
+        postResponse.setTotalPages(pagePosts.getTotalPages());
+        postResponse.setLastPage(pagePosts.isLast());
+
+        return postResponse;
     }
 
     @Override
-    public List<PostDto> getPostsByUser(Integer userId) {
+    public PostResponse getPostsByUser(Integer userId, Integer pageNumber, Integer pageSize, String sortBy, String sortDir) {
         Optional<User> optionalUser = userRepository.findById(userId);
         if(optionalUser.isEmpty())
         {
@@ -152,10 +164,22 @@ public class PostServiceImpl implements PostService{
         }
 
         User user = optionalUser.get();
+        Sort sort = sortDir.equalsIgnoreCase("asc") ? Sort.by(sortBy).ascending() : Sort.by(sortBy).descending();
 
-        List<Post> userPosts = postRepository.findByUser(user);
+        Pageable page = PageRequest.of(pageNumber,pageSize,sort);
+        Page<Post> pagePosts = postRepository.findByUser(user,page);
+        List<Post> userPosts =pagePosts.getContent();
         List<PostDto> postDtos = userPosts.stream().map(post -> entityToDto(post)).toList();
-        return postDtos;
+
+        PostResponse postResponse = new PostResponse();
+        postResponse.setContent(postDtos);
+        postResponse.setPageNumber(pagePosts.getNumber());
+        postResponse.setPageSize(pagePosts.getSize());
+        postResponse.setTotalElements(pagePosts.getTotalElements());
+        postResponse.setTotalPages(pagePosts.getTotalPages());
+        postResponse.setLastPage(pagePosts.isLast());
+
+        return postResponse;
     }
 
     @Override
