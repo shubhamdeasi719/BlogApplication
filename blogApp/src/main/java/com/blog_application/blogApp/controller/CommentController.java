@@ -6,6 +6,7 @@ import com.blog_application.blogApp.service.CommentService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -19,6 +20,7 @@ public class CommentController {
         this.commentService = commentService;
     }
 
+    @PreAuthorize("hasRole('ADMIN) or hasRole('USER')")
     @PostMapping("/user/{userId}/post/{postId}/comments")
     public ResponseEntity<CommentDto> createComment(@Valid @RequestBody CommentDto commentDto, @PathVariable Integer userId, @PathVariable Integer postId)
     {
@@ -26,6 +28,7 @@ public class CommentController {
         return new ResponseEntity<>(newComment, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN) or hasRole('USER')")
     @DeleteMapping("/comments/{commentId}")
     public ResponseEntity<ApiResponse> deleteComment(@PathVariable Integer commentId)
     {

@@ -5,6 +5,7 @@ import com.blog_application.blogApp.entity.Post;
 import com.blog_application.blogApp.entity.User;
 import com.blog_application.blogApp.exceptionHandler.CategoryNotFoundException;
 import com.blog_application.blogApp.exceptionHandler.PostNotFoundException;
+import com.blog_application.blogApp.exceptionHandler.UnAuthorizedException;
 import com.blog_application.blogApp.exceptionHandler.UserNotFoundException;
 import com.blog_application.blogApp.payloads.PostDto;
 import com.blog_application.blogApp.payloads.PostResponse;
@@ -16,6 +17,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -81,6 +84,16 @@ public class PostServiceImpl implements PostService{
         }
 
         Post existingPost = optionalPost.get();
+
+        String currentUsername = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User currentUser = userRepository.findByEmail(currentUsername)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + currentUsername));
+
+        if (!currentUser.getRole().getName().equals("ROLE_ADMIN") &&
+                !existingPost.getUser().getId().equals(currentUser.getId())) {
+            throw new UnAuthorizedException("You are not authorized to update this post");
+        }
+
         existingPost.setTitle(post.getTitle());
         existingPost.setContent(post.getContent());
         if (post.getImageName() == null || post.getImageName().isEmpty())
@@ -191,6 +204,16 @@ public class PostServiceImpl implements PostService{
         }
 
         Post post = optionalPost.get();
+
+        String currentUsername = ((UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal()).getUsername();
+        User currentUser = userRepository.findByEmail(currentUsername)
+                .orElseThrow(() -> new UserNotFoundException("User not found with email: " + currentUsername));
+
+        if (!currentUser.getRole().getName().equals("ROLE_ADMIN") &&
+                !post.getUser().getId().equals(currentUser.getId())) {
+            throw new UnAuthorizedException("You are not authorized to delete this post");
+        }
+
         postRepository.delete(post);
     }
 

@@ -5,12 +5,14 @@ import com.blog_application.blogApp.entity.Post;
 import com.blog_application.blogApp.entity.User;
 import com.blog_application.blogApp.exceptionHandler.CommentNotFoundException;
 import com.blog_application.blogApp.exceptionHandler.PostNotFoundException;
+import com.blog_application.blogApp.exceptionHandler.UnAuthorizedException;
 import com.blog_application.blogApp.exceptionHandler.UserNotFoundException;
 import com.blog_application.blogApp.payloads.CommentDto;
 import com.blog_application.blogApp.repository.CommentRepository;
 import com.blog_application.blogApp.repository.PostRepository;
 import com.blog_application.blogApp.repository.UserRepository;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -58,6 +60,14 @@ public class CommentServiceImpl implements CommentService{
         }
 
         Comment comment = optionalComment.get();
+
+        User currentUser = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (!currentUser.getRole().getName().equals("ROLE_ADMIN")
+                && !comment.getUser().getId().equals(currentUser.getId())) {
+            throw new UnAuthorizedException("You are not authorized to delete this comment"+currentUser);
+        }
+
         commentRepository.delete(comment);
     }
 }

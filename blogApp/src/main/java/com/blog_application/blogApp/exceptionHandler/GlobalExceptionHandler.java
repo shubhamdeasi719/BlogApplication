@@ -4,6 +4,7 @@ import com.blog_application.blogApp.payloads.ApiResponse;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -76,4 +77,29 @@ public class GlobalExceptionHandler {
     {
         return new ResponseEntity<>(new ApiResponse(ex.getMessage(),false),HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(BadCredentialsException.class)
+    public ResponseEntity<ApiResponse> badCredentialsException(BadCredentialsException ex)
+    {
+        return  new ResponseEntity<>(new ApiResponse(ex.getMessage(), false), HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(RoleNotFoundException.class)
+    public ResponseEntity<ApiResponse> roleNotFoundException(RoleNotFoundException ex)
+    {
+        return new ResponseEntity<>(new ApiResponse(ex.getMessage(),false), HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler(UnAuthorizedException.class)
+    public ResponseEntity<ApiResponse> unAuthorizedExceptionHandler(UnAuthorizedException ex)
+    {
+        return new ResponseEntity<>(new ApiResponse(ex.getMessage(),false),HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiResponse> globalExceptionHandler(Exception  ex)
+    {
+        return new ResponseEntity<>(new ApiResponse(ex.getMessage(),false),HttpStatus.BAD_REQUEST);
+    }
+
 }

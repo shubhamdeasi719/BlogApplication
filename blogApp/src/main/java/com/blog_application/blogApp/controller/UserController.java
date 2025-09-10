@@ -6,6 +6,7 @@ import com.blog_application.blogApp.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,6 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/create-user")
     public ResponseEntity<UserDto> createUser(@Valid @RequestBody UserDto userDto)
     {
@@ -27,6 +29,7 @@ public class UserController {
         return new ResponseEntity<>(newUserDto, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/all-users")
     public ResponseEntity<List<UserDto>> getAllUsers()
     {
@@ -34,6 +37,7 @@ public class UserController {
         return new ResponseEntity<>(userDtoList,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/one-user")
     public  ResponseEntity<UserDto> getUserById(@RequestParam Integer id)
     {
@@ -41,6 +45,7 @@ public class UserController {
         return new ResponseEntity<>(userDto,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/update-user")
     public ResponseEntity<UserDto> updateUser(@Valid  @RequestBody UserDto userDto)
     {
@@ -48,6 +53,7 @@ public class UserController {
         return new ResponseEntity<>(updatedUser,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete-user/{id}")
     public ResponseEntity<ApiResponse> deleteUser(@PathVariable Integer id)
     {

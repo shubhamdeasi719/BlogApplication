@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,6 +38,7 @@ public class PostController {
         this.fileService= fileService;
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto, @PathVariable Integer userId, @PathVariable Integer categoryId)
     {
@@ -44,6 +46,7 @@ public class PostController {
         return new ResponseEntity<>(newPostDto, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDto> getPostByPostId(@PathVariable Integer postId)
     {
@@ -51,6 +54,7 @@ public class PostController {
         return new ResponseEntity<>(postDto,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/posts")
     public ResponseEntity<PostResponse> getAllPosts(
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false)  Integer pageNumber,
@@ -63,6 +67,7 @@ public class PostController {
         return new ResponseEntity<>(postResponse,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/category/{categoryId}/posts")
     public ResponseEntity <PostResponse> getAllPostsByCategory(
             @PathVariable Integer categoryId,
@@ -76,6 +81,7 @@ public class PostController {
         return new ResponseEntity<>(postResponse,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/user/{userId}/posts")
     public ResponseEntity<PostResponse> getAllPostsByUser(
             @PathVariable Integer userId,
@@ -89,7 +95,7 @@ public class PostController {
         return new ResponseEntity<>(postResponse,HttpStatus.FOUND);
     }
 
-
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/posts/update-post")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody  PostDto postDto)
     {
@@ -97,6 +103,7 @@ public class PostController {
         return new ResponseEntity<>(updatedPostDto,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @DeleteMapping("/posts/delete-post/{postId}")
     public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId)
     {
@@ -105,6 +112,7 @@ public class PostController {
         return new ResponseEntity<>(apiResponse,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/posts/search/{keywords}")
     public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable String keywords)
     {
@@ -112,6 +120,7 @@ public class PostController {
         return new ResponseEntity<>(postDtos,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/posts/image/upload/{postId}")
     public ResponseEntity<PostDto> uploadPostImage(@PathVariable Integer postId, @RequestParam MultipartFile image) throws IOException {
         PostDto postDto = postService.getPostById(postId);
@@ -121,6 +130,7 @@ public class PostController {
         return new ResponseEntity<>(updatedPost,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping(value = "/post/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
     public void downloadImage(@PathVariable String imageName, HttpServletResponse response) throws IOException {
         InputStream resource = fileService.getResource(path, imageName);

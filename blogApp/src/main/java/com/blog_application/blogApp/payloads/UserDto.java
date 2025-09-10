@@ -15,7 +15,7 @@ public class UserDto {
     private Integer id;
 
     @NotEmpty(message = "Name can't be empty!!")
-    @Size(min =3, max = 10, message = "Name must be min 3 chars and max 10 chars")
+    @Size(min =3, max = 30, message = "Name must be min 3 chars and max 10 chars")
     private String name;
 
     @NotEmpty(message = "Email can't be empty")
@@ -28,5 +28,7 @@ public class UserDto {
 
     @NotEmpty(message = "Please add something in About Section !!")
     private String about;
+
+    private String roleName;
 
 }

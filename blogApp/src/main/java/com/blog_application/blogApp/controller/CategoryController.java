@@ -6,6 +6,7 @@ import com.blog_application.blogApp.service.CategoryService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PostMapping("/add-category")
     public ResponseEntity<CategoryDto> createCategory(@Valid  @RequestBody CategoryDto categoryDto)
     {
@@ -28,6 +30,7 @@ public class CategoryController {
         return new ResponseEntity<>(newCategoryDto, HttpStatus.CREATED);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/all-categories")
     public ResponseEntity<List<CategoryDto>> getAllCategories()
     {
@@ -35,6 +38,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryDtoList,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/one-category")
     public ResponseEntity<CategoryDto> getCategoryById(@RequestParam Integer id)
     {
@@ -42,6 +46,7 @@ public class CategoryController {
         return new ResponseEntity<>(categoryDto,HttpStatus.FOUND);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/update-category")
     public ResponseEntity<CategoryDto> updateCategory(@Valid @RequestBody CategoryDto categoryDto)
     {
@@ -49,6 +54,7 @@ public class CategoryController {
         return new ResponseEntity<>(updatedCategory,HttpStatus.OK);
     }
 
+    @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/delete-category/{id}")
     public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Integer id)
     {
