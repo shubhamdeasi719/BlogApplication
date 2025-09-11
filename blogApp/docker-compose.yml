@@ -1,0 +1,30 @@
+services:
+  blogapp-db:
+    image: mysql:8
+    container_name: blogapp-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: sd123
+      MYSQL_DATABASE: blogApplication
+    ports:
+      - "3307:3306"
+    volumes:
+      - blogapp-db-data:/var/lib/mysql
+
+  blogapp-app:
+    build: .
+    image: blogapp-app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://blogapp-db:3306/blogApplication
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: sd123
+      JWT_SECRET: some_secure_and_long_secret_key_that_is_at_least_32_chars
+      JWT_EXPIRATION: 3600000
+    depends_on:
+      - blogapp-db
+
+volumes:
+  blogapp-db-data:
