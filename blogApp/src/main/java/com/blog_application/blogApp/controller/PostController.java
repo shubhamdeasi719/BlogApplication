@@ -6,6 +6,8 @@ import com.blog_application.blogApp.payloads.PostDto;
 import com.blog_application.blogApp.payloads.PostResponse;
 import com.blog_application.blogApp.service.FileService;
 import com.blog_application.blogApp.service.PostService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
@@ -24,6 +26,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
+@Tag(name="Post APIs", description = "Create - Read - Update - Delete Posts")
 public class PostController {
 
     private PostService postService;
@@ -40,6 +43,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
+    @Operation(summary = "Create New Post, Only Admin Can Have Access")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto, @PathVariable Integer userId, @PathVariable Integer categoryId)
     {
         PostDto newPostDto = postService.createPost(postDto,userId,categoryId);
@@ -48,6 +52,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/posts/{postId}")
+    @Operation(summary = "Get Single Post by Post Id, Both Admin and User Can Have Access")
     public ResponseEntity<PostDto> getPostByPostId(@PathVariable Integer postId)
     {
         PostDto postDto = postService.getPostById(postId);
@@ -56,6 +61,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/posts")
+    @Operation(summary = "Get All Posts, also If want we can perform Paging and Sorting, Both Admin and User Can Have Access")
     public ResponseEntity<PostResponse> getAllPosts(
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false)  Integer pageNumber,
             @RequestParam(value = "pageSize", defaultValue = AppConstants.PAGE_SIZE, required = false) Integer pageSize,
@@ -69,6 +75,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/category/{categoryId}/posts")
+    @Operation(summary = "Get All Posts of Category, also If want we can perform Paging and Sorting, Both Admin and User Can Have Access")
     public ResponseEntity <PostResponse> getAllPostsByCategory(
             @PathVariable Integer categoryId,
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false)  Integer pageNumber,
@@ -83,6 +90,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/user/{userId}/posts")
+    @Operation(summary = "Get All Posts of User, also If want we can perform Paging and Sorting, Both Admin and User Can Have Access")
     public ResponseEntity<PostResponse> getAllPostsByUser(
             @PathVariable Integer userId,
             @RequestParam(value = "pageNumber", defaultValue = AppConstants.PAGE_NUMBER,required = false)  Integer pageNumber,
@@ -97,6 +105,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PutMapping("/posts/update-post")
+    @Operation(summary = "Update Post, Only Admin and Owner Can Have Access")
     public ResponseEntity<PostDto> updatePost(@Valid @RequestBody  PostDto postDto)
     {
         PostDto updatedPostDto = postService.updatePost(postDto);
@@ -105,6 +114,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @DeleteMapping("/posts/delete-post/{postId}")
+    @Operation(summary = "Delete Post, Only Admin and Owner Can Have Access")
     public ResponseEntity<ApiResponse> deletePost(@PathVariable Integer postId)
     {
         postService.deletePost(postId);
@@ -114,6 +124,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping("/posts/search/{keywords}")
+    @Operation(summary = "Search Post, Both Admin and User Can Have Access")
     public ResponseEntity<List<PostDto>> searchPostByTitle(@PathVariable String keywords)
     {
         List<PostDto> postDtos = postService.searchPosts(keywords);
@@ -122,6 +133,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/posts/image/upload/{postId}")
+    @Operation(summary = "Upload Image, Both Admin and User Can Have Access")
     public ResponseEntity<PostDto> uploadPostImage(@PathVariable Integer postId, @RequestParam MultipartFile image) throws IOException {
         PostDto postDto = postService.getPostById(postId);
         String fileName = fileService.uploadImage(path, image);
@@ -132,6 +144,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @GetMapping(value = "/post/image/{imageName}", produces = MediaType.IMAGE_JPEG_VALUE)
+    @Operation(summary = "Get Image, Both Admin and User Can Have Access")
     public void downloadImage(@PathVariable String imageName, HttpServletResponse response) throws IOException {
         InputStream resource = fileService.getResource(path, imageName);
         response.setContentType(MediaType.IMAGE_JPEG_VALUE);

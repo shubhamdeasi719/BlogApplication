@@ -6,6 +6,8 @@ import com.blog_application.blogApp.payloads.UserDto;
 import com.blog_application.blogApp.security.CustomUserDetailService;
 import com.blog_application.blogApp.security.JwtTokenHelper;
 import com.blog_application.blogApp.service.UserService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/auth")
+@Tag(name="Authentication APIs", description = "Login and Register New User")
 public class AuthController {
 
     private AuthenticationManager  authenticationManager;
@@ -35,6 +38,7 @@ public class AuthController {
     }
 
     @PostMapping("/login")
+    @Operation(summary = "User Login, Everyone Can Access")
     public ResponseEntity<JwtAuthResponse> createToken(@Valid @RequestBody JwtAuthRequest request)
     {
         authenticate(request.getEmail(), request.getPassword());
@@ -51,6 +55,7 @@ public class AuthController {
     }
 
     @PostMapping("/register")
+    @Operation(summary = "Register New User, Everyone Can Access")
     public ResponseEntity<UserDto> registerUser(@Valid @RequestBody UserDto userDto) {
         UserDto newUser = userService.registerUser(userDto);
         return new ResponseEntity<>(newUser, HttpStatus.CREATED);

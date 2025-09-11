@@ -31,6 +31,10 @@ public class SecurityConfig{
     {
         http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
+
+                        // Swagger endpoints: allow without authentication
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll()
+
                         // Auth endpoints
                         .requestMatchers("/api/auth/register", "/api/auth/login").permitAll()
 
@@ -47,7 +51,7 @@ public class SecurityConfig{
                         .requestMatchers("/api/comments/**").hasAnyRole("USER","ADMIN")
 
                         // PostController endpoints
-                        .requestMatchers( "/api/users/{userId}/categories/{categoryId}/posts").hasAnyRole("USER", "ADMIN")
+                        .requestMatchers( "/api/user/{userId}/category/{categoryId}/posts").hasAnyRole("USER", "ADMIN")
                         .requestMatchers( "/api/posts", "/api/posts/{postId}", "/api/posts/user/{userId}", "/api/posts/category/{categoryId}").hasAnyRole("USER", "ADMIN")
                         .requestMatchers( "/api/posts/update-post").hasAnyRole("USER", "ADMIN")
                         .requestMatchers( "/api/posts/delete-post/{postId}").hasAnyRole("USER", "ADMIN")
