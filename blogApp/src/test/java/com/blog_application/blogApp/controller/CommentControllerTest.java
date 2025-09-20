@@ -1,12 +1,16 @@
 package com.blog_application.blogApp.controller;
 
+import com.blog_application.blogApp.config.SecurityConfig;
 import com.blog_application.blogApp.payloads.CommentDto;
+import com.blog_application.blogApp.security.CustomUserDetailService;
+import com.blog_application.blogApp.security.JwtTokenHelper;
 import com.blog_application.blogApp.service.CommentService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -19,6 +23,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(CommentController.class)
+@Import(SecurityConfig.class)
 public class CommentControllerTest {
 
     @Autowired
@@ -26,6 +31,12 @@ public class CommentControllerTest {
 
     @MockitoBean
     private CommentService commentService;
+
+    @MockitoBean
+    private CustomUserDetailService customUserDetailService;
+
+    @MockitoBean
+    private JwtTokenHelper jwtTokenHelper;
 
     @Autowired
     ObjectMapper objectMapper;
@@ -75,10 +86,9 @@ public class CommentControllerTest {
     void testCreateComment_Forbidden_asUnauthenticatedUser() throws Exception
     {
         mockMvc.perform(post("/api/user/{userId}/post/{postId}/comments",1,1)
-                .with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(commentDto)))
-                .andExpect(status().isUnauthorized());
+                .andExpect(status().isForbidden());
     }
 
     @Test
@@ -100,7 +110,7 @@ public class CommentControllerTest {
     {
         doNothing().when(commentService).deleteComment(anyInt());
 
-        mockMvc.perform(delete("/api/comments/{commrntId}",1)
+        mockMvc.perform(delete("/api/comments/{commentId}",1)
                 .with(csrf()))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("Comment deleted successfully"));
@@ -111,8 +121,7 @@ public class CommentControllerTest {
     @Test
     void testDeleteComment_Forbidden_asUnauthenticatedUser() throws Exception
     {
-        mockMvc.perform(delete("/api/comments/{commentId}",1)
-                .with(csrf()))
-                .andExpect(status().isUnauthorized());
+        mockMvc.perform(delete("/api/comments/{commentId}",1))
+                .andExpect(status().isForbidden());
     }
 }

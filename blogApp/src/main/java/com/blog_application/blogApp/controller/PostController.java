@@ -19,7 +19,6 @@ import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
@@ -43,7 +42,7 @@ public class PostController {
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")
     @PostMapping("/user/{userId}/category/{categoryId}/posts")
-    @Operation(summary = "Create New Post, Only Admin Can Have Access")
+    @Operation(summary = "Create New Post, Both Admin and User Can Have Access")
     public ResponseEntity<PostDto> createPost(@Valid @RequestBody PostDto postDto, @PathVariable Integer userId, @PathVariable Integer categoryId)
     {
         PostDto newPostDto = postService.createPost(postDto,userId,categoryId);

@@ -40,7 +40,7 @@ public class CategoryController {
     public ResponseEntity<List<CategoryDto>> getAllCategories()
     {
         List<CategoryDto> categoryDtoList = categoryService.getAllCategories();
-        return new ResponseEntity<>(categoryDtoList,HttpStatus.FOUND);
+        return new ResponseEntity<>(categoryDtoList,HttpStatus.OK);
     }
 
     @PreAuthorize("hasRole('ADMIN') or hasRole('USER')")

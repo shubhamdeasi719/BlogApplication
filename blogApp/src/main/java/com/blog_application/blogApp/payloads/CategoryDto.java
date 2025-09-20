@@ -14,7 +14,7 @@ public class CategoryDto {
     private Integer id;
 
     @NotEmpty(message = "Title cant be empty")
-    @Size(min = 5, message = "Title must be more than 3 chars")
+    @Size(min = 5, message = "Title must be more than 5 chars")
     private String categoryTitle;
 
     @NotEmpty(message= "Description cant be empty")
